@@ -1,8 +1,9 @@
 import toast from "react-hot-toast";
 import axiosInstance from "./axios"
 
-export const getProducts = async (skip = 0) => {
+export const getProducts = async (setLoading, skip = 0) => {
   try {
+    setLoading(true);
     const response = await axiosInstance.get('/products', {
       params: {
         limit: 10,
@@ -13,5 +14,7 @@ export const getProducts = async (skip = 0) => {
   } catch (error) {
     toast.error('An Error Occurred');
     return { products: [], total: 0, error: error.message || 'Something went wrong' }; 
+  } finally {
+    setLoading(false);
   }
 }
