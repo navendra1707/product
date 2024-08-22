@@ -3,6 +3,7 @@ import { getProducts } from '../api/product';
 import { Image, Button } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom'; 
 import ProductsTable from '../components/ProductsTable';
+import Loader from '../components/Loader';
 import {getItem, setItem} from '../utils/localStorage'
 import toast from 'react-hot-toast';
 
@@ -10,13 +11,14 @@ const Products = () => {
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
   const productsToCompare = getItem("productsToCompare") || [];
 
   const fetchProducts = async (page = 1) => {
-    const response = await getProducts((page - 1) * 10);
+    const response = await getProducts(setLoading, (page - 1) * 10);
     setProducts(response?.products);
     setTotalItems(response?.total);
   };
@@ -48,6 +50,8 @@ const Products = () => {
     setItem('productsToCompare', productsToCompare)
     navigate('/compare')
   };
+
+  if(loading)return <Loader />
 
   return (
     <ProductsTable
