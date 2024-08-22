@@ -1,6 +1,7 @@
 import { Button } from 'antd';
 import React, { useEffect, useState } from 'react';
 import ProductsTable from './ProductsTable';
+import Loader from './Loader';
 import { getItem, setItem } from '../utils/localStorage';
 import { getProducts } from '../api/product';
 import toast from 'react-hot-toast';
@@ -9,11 +10,12 @@ const AddMoreModal = ({onClose, setData}) => {
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0); 
+  const [loading, setLoading] = useState(false);
 
   const productsToCompare = getItem("productsToCompare") || []
 
   const fetchProducts = async (page = 1) => {
-    const response = await getProducts((page - 1) * 10);
+    const response = await getProducts(setLoading, (page - 1) * 10);
     setProducts(response?.products);
     setTotalItems(response?.total);
   };
@@ -38,6 +40,8 @@ const AddMoreModal = ({onClose, setData}) => {
     setData(productsToCompare)
     onClose();
   };
+
+  if(loading)return <Loader />
 
   return (
     <ProductsTable
